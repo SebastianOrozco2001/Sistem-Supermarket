@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperGo - Supermercado Digital Pro</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <style>
+        :root {
+            --color-primary: #6750A4;
+            --color-primary-container: #EADDFF;
+            --color-on-primary: #FFFFFF;
+            --color-on-primary-container: #21005D;
+            --color-secondary: #625B71;
+            --color-surface: #FFFBFE;
+            --color-surface-variant: #E7E0EC;
+            --color-on-surface: #1C1B1F;
+            --color-on-surface-variant: #49454F;
+            --color-background: #F7F2FA;
+            --color-outline: #79747E;
+            --color-error: #B3261E;
+            --color-success: #2E7D32;
+            --color-warning: #F57C00;
+            --color-info: #0288D1;
+            --color-gold: #FFD700;
+            --color-silver: #C0C0C0;
+            --color-bronze: #CD7F32;
+            --font-family-base: 'Roboto', sans-serif;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-4: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: 0.15s ease-in-out;
+            --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-on-surface);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .sidebar-left {
+            position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
+            background: var(--color-surface); box-shadow: var(--shadow-2);
+            z-index: 200; display: flex; flex-direction: column;
+            overflow-y: auto; padding-top: var(--spacing-md);
+            transform: translateX(0) !important;
+        }
+        .main-header, main {
+            margin-left: 280px;
+        }
+
+        .main-header {
+            background-color: rgba(255, 251, 254, 0.95); backdrop-filter: blur(5px);
+            padding: var(--spacing-md) 0; box-shadow: var(--shadow-1);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-content { max-width: 1400px; margin: 0 auto; padding: 0 16px; display:flex; align-items:center; justify-content:space-between; gap: 16px; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--color-primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .search-bar { flex-grow:1; position:relative; max-width: 500px; }
+        .search-bar .material-symbols-outlined { position:absolute; left:12px; top:50%; transform:translateY(-50%); color: var(--color-on-surface-variant); }
+        .search-bar input { width:100%; padding:12px 16px 12px 40px; border-radius:16px; border:none; background-color:var(--color-surface-variant); transition: all var(--transition-fast); }
+        .search-bar input:focus { background-color: var(--color-surface); box-shadow: 0 0 0 2px var(--color-primary); }
+        .header-actions { display:flex; align-items:center; gap:8px; }
+
+        .view { display: none; animation: fadeIn 0.5s ease; }
+        .view.active { display: block; }
+        .view-container { max-width: 1400px; margin: 0 auto; padding: var(--spacing-lg) var(--spacing-md); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .hidden { display: none !important; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 24px; border-radius: var(--border-radius-lg); border: 1px solid var(--color-outline);
+            background-color: transparent; color: var(--color-primary); font-weight: 500; cursor: pointer;
+            transition: all var(--transition-fast); text-decoration: none; position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(103, 80, 164, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        .btn:hover { background-color: rgba(103, 80, 164, 0.08); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background-color: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+        .btn-primary:hover { box-shadow: var(--shadow-2); background-color: var(--color-primary); }
+        .btn-success { background-color: var(--color-success); color: white; border-color: var(--color-success); }
+        .btn-warning { background-color: var(--color-warning); color: white; border-color: var(--color-warning); }
+        .btn-danger { background-color: var(--color-error); color: white; border-color: var(--color-error); }
+        .btn-info { background-color: var(--color-info); color: white; border-color: var(--color-info); }
+        
+        .icon-btn {
+            background: none; border: none; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
+            transition: background-color var(--transition-fast);
+        }
+        .icon-btn:hover { background-color: var(--color-surface-variant); }
+        .icon-btn:active { transform: scale(0.95); }
+        .badge { position:absolute; top:4px; right:4px; background-color:var(--color-error); color:white; border-radius:50%; font-size:10px; width:16px; height:16px; display:flex; align-items:center; justify-content:center; animation: scaleIn 0.3s ease; }
+        
+        .form-card { background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-lg); box-shadow: var(--shadow-2); animation: slideInRight 0.4s ease; }
+        .form-group { margin-bottom: var(--spacing-md); }
+        .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 8px; color: var(--color-on-surface-variant); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px var(--spacing-md); border-radius: var(--border-radius-sm); border: 1px solid var(--color-outline);
+            background-color: var(--color-surface); font-size: 1rem; transition: all var(--transition-fast);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus,
+        .form-group input:focus-visible, .form-group select:focus-visible, .form-group textarea:focus-visible {
+            outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 2px var(--color-primary-container);
+        }
+        .product-filters { display: flex; gap: 16px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-lg); }
+        .product-card {
+            background-color: var(--color-surface); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-1);
+            overflow: hidden; display: flex; flex-direction: column;
+            transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+            animation: scaleIn 0.5s ease;
+        }
+        .product-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-3); }
+        .product-card .product-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .product-card .product-info { padding: var(--spacing-md); flex-grow: 1; display: flex; flex-direction: column; }
+        .product-card .btn { margin-top: auto; }
+        .product-card .product-badge { position: absolute; top: 12px; left: 12px; background: var(--color-error); color: white; padding: 4px 8px; border-radius: var(--border-radius-sm); font-size: 0.75rem; font-weight: 500; }
+        .product-card .product-rating { display: flex; align-items: center; gap: 4px; margin: 8px 0; }
+        .product-card .product-stock { font-size: 0.875rem; color: var(--color-on-surface-variant); margin-bottom: 8px; }
+        .product-card .stock-low { color: var(--color-warning); }
+        .product-card .stock-out { color: var(--color-error); }
+
+        .sidebar-left nav { width: 100%; }
+        .sidebar-left nav ul { list-style: none; padding-left: 0; }
+        .sidebar-left nav .nav-item { display: block; color: var(--color-on-surface-variant); text-decoration: none; white-space: nowrap; }
+        .sidebar-left nav .nav-link { display: flex; align-items: center; gap: 16px; padding: 12px 18px; border-radius: 0 100px 100px 0; margin-right: 12px; transition: all var(--transition-fast); }
+        .sidebar-left nav .nav-link.active, .sidebar-left nav .nav-link:hover { background-color: var(--color-primary-container); color: var(--color-on-primary-container); }
+        .sidebar-left .has-submenu .nav-link { justify-content: space-between; }
+        .sidebar-left .submenu-toggle-icon { transition: transform var(--transition-smooth); }
+        .sidebar-left .has-submenu.open > .nav-link .submenu-toggle-icon { transform: rotate(90deg); }
+        .sidebar-left .submenu { max-height: 0; overflow: hidden; transition: max-height var(--transition-smooth); padding-left: 18px; }
+        .sidebar-left .has-submenu.open > .submenu { max-height: 500px; }
+        .sidebar-left .submenu .nav-link { padding: 8px 18px 8px 30px; }
+
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
+        .modal-content { background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-lg); max-width: 450px; width: 90%; position: relative; animation: scaleIn 0.3s ease; }
+        .cart-sidebar { position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100%; background: var(--color-surface); z-index: 1001; box-shadow: var(--shadow-3); display: flex; flex-direction: column; transform: translateX(100%); transition: transform var(--transition-smooth); }
+        .cart-sidebar.open { transform: translateX(0); }
+        .cart-sidebar .cart-items-container { flex-grow: 1; overflow-y: auto; padding: 8px; }
+        .cart-sidebar .cart-footer { padding: var(--spacing-md); border-top: 1px solid var(--color-surface-variant); }
+
+        .checkout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: flex-start; }
+        @media (max-width: 992px) { .checkout-grid { grid-template-columns: 1fr; } }
+        .delivery-options label { display: flex; align-items: center; gap: 8px; padding: 12px; border: 1px solid var(--color-outline); border-radius: var(--border-radius-sm); margin-bottom: 8px; cursor: pointer; transition: all var(--transition-fast); }
+        .delivery-options label:hover { background-color: var(--color-surface-variant); }
+        .delivery-options input:checked + span { font-weight: bold; color: var(--color-primary); }
+        .store-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--color-surface-variant); border-radius: var(--border-radius-sm); padding: 8px; }
+        .store-item { padding: 12px; border-radius: var(--border-radius-sm); margin-bottom: 8px; cursor: pointer; transition: all var(--transition-fast); border: 1px solid transparent; }
+        .store-item:hover { background-color: var(--color-surface-variant); }
+        .store-item.selected { border-color: var(--color-primary); background-color: var(--color-primary-container); }
+
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl); }
+        .admin-card { background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-lg); box-shadow: var(--shadow-2); animation: slideInRight 0.4s ease; }
+        .admin-section { margin-bottom: var(--spacing-xl); }
+        .data-table { width: 100%; border-collapse: collapse; background: var(--color-surface); border-radius: var(--border-radius-lg); overflow: hidden; box-shadow: var(--shadow-1); }
+        .data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--color-surface-variant); }
+        .data-table th { background-color: var(--color-primary-container); color: var(--color-on-primary-container); font-weight: 500; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background-color: var(--color-surface-variant); }
+        .action-buttons { display: flex; gap: 8px; }
+        .chart-container { background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-lg); box-shadow: var(--shadow-2); margin-bottom: var(--spacing-lg); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+        .stat-card { background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-1); text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--color-primary); }
+        .stat-label { font-size: 0.875rem; color: var(--color-on-surface-variant); }
+
+        .tabs { display: flex; border-bottom: 1px solid var(--color-surface-variant); margin-bottom: var(--spacing-lg); }
+        .tab { padding: 12px 24px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--color-on-surface-variant); transition: all var(--transition-fast); }
+        .tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
+
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-3); display: flex; align-items: center; gap: 12px; z-index: 1100; animation: slideInRight 0.3s ease; max-width: 350px; }
+        .toast.success { border-left: 4px solid var(--color-success); }
+        .toast.error { border-left: 4px solid var(--color-error); }
+        .toast.warning { border-left: 4px solid var(--color-warning); }
+        .toast.info { border-left: 4px solid var(--color-info); }
+
+        .loyalty-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; margin-left: 8px; }
+        .badge-gold { background-color: var(--color-gold); color: #000; }
+        .badge-silver { background-color: var(--color-silver); color: #000; }
+        .badge-bronze { background-color: var(--color-bronze); color: #fff; }
+
+        .promo-banner { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%); color: white; padding: 16px; border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-lg); text-align: center; animation: pulse 2s infinite; }
+        .featured-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl); }
+        .featured-card { position: relative; overflow: hidden; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-3); }
+        .featured-card .featured-badge { position: absolute; top: 12px; right: 12px; background: var(--color-warning); color: white; padding: 4px 8px; border-radius: var(--border-radius-sm); font-size: 0.75rem; font-weight: 500; }
+
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .search-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: var(--color-surface); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-3); z-index: 50; max-height: 300px; overflow-y: auto; }
+        .search-suggestion-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--color-surface-variant); transition: background-color var(--transition-fast); }
+        .search-suggestion-item:hover { background-color: var(--color-surface-variant); }
+        .search-suggestion-item:last-child { border-bottom: none; }
+
+        .notification-bell { position: relative; }
+        .notification-dropdown { position: absolute; top: 100%; right: 0; width: 320px; background: var(--color-surface); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-3); z-index: 100; padding: var(--spacing-md); }
+        .notification-item { padding: 12px; border-bottom: 1px solid var(--color-surface-variant); }
+        .notification-item:last-child { border-bottom: none; }
+        .notification-item.unread { background-color: var(--color-primary-container); }
+
+        .review-card { background: var(--color-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-1); margin-bottom: var(--spacing-md); }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm); }
+        .review-rating { display: flex; align-items: center; gap: 4px; color: var(--color-warning); }
+
+        .pagination { display: flex; justify-content: center; align-items: center; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+        .pagination-btn { padding: 8px 16px; border: 1px solid var(--color-outline); border-radius: var(--border-radius-sm); background: var(--color-surface); cursor: pointer; transition: all var(--transition-fast); }
+        .pagination-btn.active { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+        .pagination-btn:hover:not(.active) { background: var(--color-surface-variant); }
+
+        .comparison-table { width: 100%; border-collapse: collapse; background: var(--color-surface); border-radius: var(--border-radius-lg); overflow: hidden; box-shadow: var(--shadow-1); }
+        .comparison-table th, .comparison-table td { padding: 12px 16px; text-align: left; border: 1px solid var(--color-surface-variant); }
+        .comparison-table th { background-color: var(--color-primary-container); color: var(--color-on-primary-container); font-weight: 500; }
+
+        .wishlist-btn { background: none; border: none; color: var(--color-on-surface-variant); cursor: pointer; transition: color var(--transition-fast); position: absolute; top: 12px; right: 12px; }
+        .wishlist-btn.active { color: var(--color-error); }
+        .wishlist-btn:hover { color: var(--color-error); }
+
+        .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; }
+        
+        @media (max-width: 1024px) {
+            .sidebar-left { transform: translateX(-100%); transition: transform var(--transition-smooth); }
+            .sidebar-left.open { transform: translateX(0); }
+            .main-header, main { margin-left: 0; }
+            .mobile-menu-btn { display: block; }
+            .header-content { flex-wrap: wrap; }
+            .search-bar { order: 3; max-width: 100%; margin-top: 16px; }
+        }
+
+        @media (max-width: 768px) {
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+            .checkout-grid { grid-template-columns: 1fr; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .cart-sidebar { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar-left" id="sidebar-left">
+        <nav>
+            <div style="padding: 12px 18px; display: flex; align-items: center; gap: 12px;">
+                <span class="material-symbols-outlined" style="color: var(--color-primary);">store</span>
+                <span style="font-weight: 700; color: var(--color-primary);">SuperGo</span>
+            </div>
+            <hr style="margin: 8px 12px; border-color: var(--color-surface-variant);">
+            <ul id="auth-menu-items">
+                <li><a href="#" class="nav-link" data-action="open-auth-modal">
+                    <span class="material-symbols-outlined">login</span>
+                    <span class="menu-label">Ingresar</span>
+                </a></li>
+            </ul>
+             <ul id="user-menu-items" class="hidden">
+                <li><a href="#" class="nav-link" data-action="view-account">
+                    <span class="material-symbols-outlined">account_circle</span>
+                    <span class="menu-label" id="user-menu-name">Mi Cuenta</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-action="view-wishlist">
+                    <span class="material-symbols-outlined">favorite</span>
+                    <span class="menu-label">Mi Lista de Deseos</span>
+                    <span id="wishlist-count" class="badge hidden">0</span>
+                </a></li>
+                 <li><a href="#" class="nav-link" data-action="logout">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="menu-label">Cerrar Sesión</span>
+                </a></li>
+            </ul>
+            <hr style="margin: 8px 12px; border-color: var(--color-surface-variant);">
+            <ul id="category-menu">
+                <li><a href="#" class="nav-link nav-item" data-category="all" data-main-category="all">
+                    <span class="material-symbols-outlined">store</span>
+                    <span class="menu-label">Todos los Productos</span>
+                </a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <header class="main-header">
+        <div class="header-content">
+            <button class="mobile-menu-btn icon-btn" id="mobile-menu-btn">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <a href="#" class="logo" data-action="go-home">
+                <span class="material-symbols-outlined">store</span>
+                SuperGo
+            </a>
+            <div class="search-bar">
+                <span class="material-symbols-outlined">search</span>
+                <input type="search" id="search-input" placeholder="Buscar productos...">
+                <div id="search-suggestions" class="search-suggestions hidden"></div>
+            </div>
+            <div class="header-actions">
+                <div class="notification-bell">
+                    <button id="notification-button" class="icon-btn" data-action="toggle-notifications">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span id="notification-count" class="badge hidden">0</span>
+                    </button>
+                    <div id="notification-dropdown" class="notification-dropdown hidden">
+                        <h4>Notificaciones</h4>
+                        <div id="notification-list"></div>
+                    </div>
+                </div>
+                <button id="wishlist-button" class="icon-btn" data-action="view-wishlist">
+                    <span class="material-symbols-outlined">favorite</span>
+                    <span id="wishlist-header-count" class="badge hidden">0</span>
+                </button>
+                <button id="cart-button" class="icon-btn" data-action="open-cart">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span id="cart-item-count" class="badge hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="view-container">
+            <section id="product-view" class="view active">
+                <div class="promo-banner">
+                    <h2>¡Oferta Especial! Envío gratis en compras superiores a $100</h2>
+                    <p>Válido hasta agotar existencias</p>
+                </div>
+                
+                <div class="featured-products">
+                    <div class="featured-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: var(--spacing-lg); display: flex; flex-direction: column; justify-content: center;">
+                        <h3>Productos Destacados</h3>
+                        <p>Lo más vendido esta semana</p>
+                    </div>
+                </div>
+
+                <div class="product-filters">
+                    <h2 id="view-title">Todos los Productos</h2>
+                    <div style="flex-grow:1;"></div>
+                    <select id="sort-order" class="form-group">
+                        <option value="name-asc">Ordenar por: Nombre (A-Z)</option>
+                        <option value="name-desc">Nombre (Z-A)</option>
+                        <option value="price-asc">Precio (Menor a Mayor)</option>
+                        <option value="price-desc">Precio (Mayor a Menor)</option>
+                        <option value="rating-desc">Mejor Valorados</option>
+                        <option value="popularity-desc">Más Populares</option>
+                    </select>
+                    <button id="filter-toggle" class="btn btn-primary">
+                        <span class="material-symbols-outlined">filter_list</span>
+                        Filtros
+                    </button>
+                </div>
+
+                <div id="filter-panel" class="form-card hidden">
+                    <h3>Filtros Avanzados</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+                        <div class="form-group">
+                            <label for="price-range">Rango de Precio</label>
+                            <select id="price-range">
+                                <option value="all">Todos los precios</option>
+                                <option value="0-25">$0 - $25</option>
+                                <option value="25-50">$25 - $50</option>
+                                <option value="50-100">$50 - $100</option>
+                                <option value="100-9999">Más de $100</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rating-filter">Valoración Mínima</label>
+                            <select id="rating-filter">
+                                <option value="0">Todas las valoraciones</option>
+                                <option value="4">4 estrellas o más</option>
+                                <option value="3">3 estrellas o más</option>
+                                <option value="2">2 estrellas o más</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="availability-filter">Disponibilidad</label>
+                            <select id="availability-filter">
+                                <option value="all">Todos los productos</option>
+                                <option value="in-stock">En stock</option>
+                                <option value="out-of-stock">Agotados</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
+                        <button id="apply-filters" class="btn btn-primary">Aplicar Filtros</button>
+                        <button id="clear-filters" class="btn">Limpiar Filtros</button>
+                    </div>
+                </div>
+
+                <div id="product-grid" class="product-grid"></div>
+                <div id="pagination-controls" class="pagination hidden"></div>
+                <p id="no-results-message" class="hidden" style="text-align:center; padding: 40px;">No se encontraron productos.</p>
+            </section>
+            <section id="checkout-view" class="view">
+                <h2>Finalizar Compra</h2>
+                <div class="checkout-grid">
+                    <div class="form-card">
+                         <h3>1. Método de Entrega</h3>
+                         <div class="delivery-options form-group">
+                             <label>
+                                 <input type="radio" name="delivery-method" value="pickup" checked>
+                                 <span>Retirar en tienda</span>
+                             </label>
+                             <label>
+                                 <input type="radio" name="delivery-method" value="shipping">
+                                 <span>Envío a domicilio</span>
+                             </label>
+                             <label>
+                                 <input type="radio" name="delivery-method" value="express">
+                                 <span>Envío express (24h) - $15 adicional</span>
+                             </label>
+                         </div>
+                         
+                         <div id="pickup-details">
+                             <h3>2. Selecciona una tienda</h3>
+                             <div class="form-group">
+                                 <label for="pickup-store">Tienda para recoger</label>
+                                 <select id="pickup-store" class="form-group">
+                                     <option value="">Selecciona una tienda</option>
+                                 </select>
+                             </div>
+                         </div>
+                         
+                         <div id="shipping-details" class="hidden">
+                             <h3>2. Dirección de Envío</h3>
+                             <div class="form-group">
+                                 <label for="shipping-address">Dirección</label>
+                                 <input type="text" id="shipping-address" placeholder="Ingresa tu dirección completa">
+                             </div>
+                              <div class="form-group">
+                                 <label for="shipping-city">Ciudad</label>
+                                 <input type="text" id="shipping-city" value="Guatemala City">
+                             </div>
+                             <div class="form-group">
+                                 <label for="shipping-zip">Código Postal</label>
+                                 <input type="text" id="shipping-zip" placeholder="01001">
+                             </div>
+                             <div class="form-group">
+                                 <label for="shipping-notes">Instrucciones de entrega (opcional)</label>
+                                 <textarea id="shipping-notes" rows="3" placeholder="Ej: Timbrar dos veces, dejar con el portero, etc."></textarea>
+                             </div>
+                         </div>
+                         
+                         <h3>3. Información de Contacto</h3>
+                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                             <div class="form-group">
+                                 <label for="checkout-email">Correo Electrónico</label>
+                                 <input type="email" id="checkout-email" required>
+                             </div>
+                             <div class="form-group">
+                                 <label for="checkout-phone">Teléfono</label>
+                                 <input type="tel" id="checkout-phone" required>
+                             </div>
+                         </div>
+
+                         <h3>4. Información de Pago</h3>
+                         <form id="payment-form">
+                            <div class="form-group">
+                                <label for="card-name">Nombre en la tarjeta</label>
+                                <input type="text" id="card-name" required placeholder="Como aparece en la tarjeta">
+                            </div>
+                             <div class="form-group">
+                                <label for="card-number">Número de tarjeta</label>
+                                <input type="text" id="card-number" placeholder="0000 0000 0000 0000" required maxlength="19">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group">
+                                    <label for="card-expiry">Fecha de expiración</label>
+                                    <input type="text" id="card-expiry" placeholder="MM/AA" required maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="card-cvc">CVC</label>
+                                    <input type="text" id="card-cvc" placeholder="123" required maxlength="4">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="save-payment" checked>
+                                    Guardar información de pago para futuras compras
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%; margin-top: 16px;">
+                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">lock</span>
+                                Pagar Ahora
+                            </button>
+                         </form>
+                    </div>
+                    <div class="form-card">
+                        <h3>Resumen de Orden</h3>
+                        <div id="order-summary"></div>
+                        <div id="delivery-summary" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-surface-variant);"></div>
+                        <div id="discount-summary" style="margin-top: 8px;"></div>
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 1.2rem; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-surface-variant);">
+                            <span>Total:</span>
+                            <span id="order-total">$0.00</span>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 16px;">
+                            <label for="discount-code">Código de descuento</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="discount-code" placeholder="Ingresa código" style="flex-grow: 1;">
+                                <button id="apply-discount" class="btn btn-primary">Aplicar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="accept-terms" required>
+                                Acepto los términos y condiciones
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="order-confirmation-view" class="view hidden">
+                <div class="form-card" style="text-align:center;">
+                    <span class="material-symbols-outlined" style="font-size: 64px; color: var(--color-success);">check_circle</span>
+                    <h2>¡Gracias por tu compra!</h2>
+                    <p>Tu pedido ha sido procesado exitosamente.</p>
+                    <p id="order-details" style="margin: 16px 0; padding: 16px; background: var(--color-surface-variant); border-radius: var(--border-radius-md);"></p>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
+                        <button class="btn btn-primary" data-action="go-home">Seguir comprando</button>
+                        <button class="btn" data-action="view-account">Ver mis pedidos</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="admin-view" class="view hidden">
+                 <h2>Panel de Administración</h2>
+                 
+                 <div class="stats-grid">
+                     <div class="stat-card">
+                         <div class="stat-value" id="total-sales">$0</div>
+                         <div class="stat-label">Ventas Totales</div>
+                     </div>
+                     <div class="stat-card">
+                         <div class="stat-value" id="total-orders">0</div>
+                         <div class="stat-label">Pedidos</div>
+                     </div>
+                     <div class="stat-card">
+                         <div class="stat-value" id="total-products">0</div>
+                         <div class="stat-label">Productos</div>
+                     </div>
+                     <div class="stat-card">
+                         <div class="stat-value" id="total-users">0</div>
+                         <div class="stat-label">Usuarios</div>
+                     </div>
+                     <div class="stat-card">
+                         <div class="stat-value" id="total-revenue">$0</div>
+                         <div class="stat-label">Ingresos Mensuales</div>
+                     </div>
+                     <div class="stat-card">
+                         <div class="stat-value" id="conversion-rate">0%</div>
+                         <div class="stat-label">Tasa de Conversión</div>
+                     </div>
+                 </div>
+                 
+                 <div class="tabs">
+                     <button class="tab active" data-tab="products-tab">Productos</button>
+                     <button class="tab" data-tab="users-tab">Usuarios</button>
+                     <button class="tab" data-tab="stores-tab">Tiendas</button>
+                     <button class="tab" data-tab="categories-tab">Categorías</button>
+                     <button class="tab" data-tab="reports-tab">Reportes</button>
+                     <button class="tab" data-tab="marketing-tab">Marketing</button>
+                 </div>
+                 
+                 <div class="tab-content active" id="products-tab">
+                     <div class="admin-section">
+                         <h3>Gestión de Productos</h3>
+                         <div class="admin-card">
+                             <h4>Agregar Nuevo Producto</h4>
+                             <form id="admin-product-form">
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-product-name">Nombre</label>
+                                         <input type="text" id="admin-product-name" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-product-category">Categoría</label>
+                                         <select id="admin-product-category" required>
+                                             <option value="">Selecciona categoría</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-product-price">Precio</label>
+                                         <input type="number" id="admin-product-price" step="0.01" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-product-stock">Stock</label>
+                                         <input type="number" id="admin-product-stock" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-product-rating">Valoración</label>
+                                         <input type="number" id="admin-product-rating" step="0.1" min="0" max="5">
+                                     </div>
+                                 </div>
+                                 <div class="form-group">
+                                     <label for="admin-product-image">URL de la imagen</label>
+                                     <input type="text" id="admin-product-image" required>
+                                 </div>
+                                 <div class="form-group">
+                                     <label for="admin-product-description">Descripción</label>
+                                     <textarea id="admin-product-description" rows="3"></textarea>
+                                 </div>
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-product-sku">SKU</label>
+                                         <input type="text" id="admin-product-sku">
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-product-barcode">Código de Barras</label>
+                                         <input type="text" id="admin-product-barcode">
+                                     </div>
+                                 </div>
+                                 <div class="form-group">
+                                     <label>
+                                         <input type="checkbox" id="admin-product-featured">
+                                         Producto destacado
+                                     </label>
+                                 </div>
+                                 <button type="submit" class="btn btn-primary">Agregar Producto</button>
+                             </form>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Lista de Productos</h4>
+                             <div class="data-table-container" style="overflow-x: auto;">
+                                 <table class="data-table">
+                                     <thead>
+                                         <tr>
+                                             <th>ID</th>
+                                             <th>Nombre</th>
+                                             <th>Categoría</th>
+                                             <th>Precio</th>
+                                             <th>Stock</th>
+                                             <th>Valoración</th>
+                                             <th>Acciones</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="admin-products-list">
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <div class="tab-content" id="users-tab">
+                     <div class="admin-section">
+                         <h3>Gestión de Usuarios</h3>
+                         <div class="admin-card">
+                             <h4>Crear Nuevo Usuario</h4>
+                             <form id="admin-user-form">
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-user-name">Nombre</label>
+                                         <input type="text" id="admin-user-name" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-user-email">Correo</label>
+                                         <input type="email" id="admin-user-email" required>
+                                     </div>
+                                 </div>
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-user-password">Contraseña</label>
+                                         <input type="password" id="admin-user-password" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-user-role">Rol</label>
+                                         <select id="admin-user-role" required>
+                                             <option value="user">Usuario</option>
+                                             <option value="admin">Administrador</option>
+                                             <option value="manager">Gerente</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-user-phone">Teléfono</label>
+                                         <input type="text" id="admin-user-phone">
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-user-loyalty">Puntos de Fidelidad</label>
+                                         <input type="number" id="admin-user-loyalty" value="0">
+                                     </div>
+                                 </div>
+                                 <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                             </form>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Lista de Usuarios</h4>
+                             <div class="data-table-container" style="overflow-x: auto;">
+                                 <table class="data-table">
+                                     <thead>
+                                         <tr>
+                                             <th>ID</th>
+                                             <th>Nombre</th>
+                                             <th>Correo</th>
+                                             <th>Rol</th>
+                                             <th>Puntos</th>
+                                             <th>Acciones</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="admin-users-list">
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <div class="tab-content" id="stores-tab">
+                     <div class="admin-section">
+                         <h3>Gestión de Tiendas</h3>
+                         <div class="admin-card">
+                             <h4>Agregar Nueva Tienda</h4>
+                             <form id="admin-store-form">
+                                 <div class="form-group">
+                                     <label for="admin-store-name">Nombre de la tienda</label>
+                                     <input type="text" id="admin-store-name" required>
+                                 </div>
+                                 <div class="form-group">
+                                     <label for="admin-store-address">Dirección</label>
+                                     <input type="text" id="admin-store-address" required>
+                                 </div>
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-store-phone">Teléfono</label>
+                                         <input type="text" id="admin-store-phone" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-store-hours">Horario</label>
+                                         <input type="text" id="admin-store-hours" placeholder="Ej: 8:00 - 20:00" required>
+                                     </div>
+                                 </div>
+                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                     <div class="form-group">
+                                         <label for="admin-store-lat">Latitud</label>
+                                         <input type="text" id="admin-store-lat">
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-store-lng">Longitud</label>
+                                         <input type="text" id="admin-store-lng">
+                                     </div>
+                                 </div>
+                                 <button type="submit" class="btn btn-primary">Agregar Tienda</button>
+                             </form>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Lista de Tiendas</h4>
+                             <div class="data-table-container" style="overflow-x: auto;">
+                                 <table class="data-table">
+                                     <thead>
+                                         <tr>
+                                             <th>ID</th>
+                                             <th>Nombre</th>
+                                             <th>Dirección</th>
+                                             <th>Teléfono</th>
+                                             <th>Horario</th>
+                                             <th>Acciones</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="admin-stores-list">
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                <div class="tab-content" id="categories-tab">
+                     <div class="admin-section">
+                         <h3>Gestión de Categorías</h3>
+                         <div class="admin-grid">
+                             <div class="admin-card">
+                                 <h4>Agregar Nueva Categoría Principal</h4>
+                                 <form id="admin-main-category-form">
+                                     <div class="form-group">
+                                         <label for="admin-main-category-name">Nombre de la categoría</label>
+                                         <input type="text" id="admin-main-category-name" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-main-category-icon">Icono (Material Symbols)</label>
+                                         <input type="text" id="admin-main-category-icon" placeholder="shopping_basket" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-main-category-color">Color</label>
+                                         <input type="color" id="admin-main-category-color" value="#6750A4">
+                                     </div>
+                                     <button type="submit" class="btn btn-primary">Agregar Categoría</button>
+                                 </form>
+                             </div>
+                             
+                             <div class="admin-card">
+                                 <h4>Agregar Subcategoría</h4>
+                                 <form id="admin-subcategory-form">
+                                     <div class="form-group">
+                                         <label for="admin-subcategory-main">Categoría Principal</label>
+                                         <select id="admin-subcategory-main" required>
+                                             <option value="">Selecciona categoría principal</option>
+                                         </select>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="admin-subcategory-name">Nombre de la subcategoría</label>
+                                         <input type="text" id="admin-subcategory-name" required>
+                                     </div>
+                                     <button type="submit" class="btn btn-primary">Agregar Subcategoría</button>
+                                 </form>
+                             </div>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Lista de Categorías</h4>
+                             <div id="admin-categories-list">
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <div class="tab-content" id="reports-tab">
+                     <div class="admin-section">
+                         <h3>Reportes de Ventas</h3>
+                         <div class="admin-card">
+                             <h4>Filtros de Reporte</h4>
+                             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                                 <div class="form-group">
+                                     <label for="report-period">Periodo</label>
+                                     <select id="report-period">
+                                         <option value="day">Hoy</option>
+                                         <option value="week">Esta semana</option>
+                                         <option value="month">Este mes</option>
+                                         <option value="quarter">Este trimestre</option>
+                                         <option value="year">Este año</option>
+                                         <option value="custom">Personalizado</option>
+                                     </select>
+                                 </div>
+                                 <div class="form-group">
+                                     <label for="report-start-date">Fecha inicial</label>
+                                     <input type="date" id="report-start-date">
+                                 </div>
+                                 <div class="form-group">
+                                     <label for="report-end-date">Fecha final</label>
+                                     <input type="date" id="report-end-date">
+                                 </div>
+                             </div>
+                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                                 <div class="form-group">
+                                     <label for="report-metric">Métrica</label>
+                                     <select id="report-metric">
+                                         <option value="sales">Ventas</option>
+                                         <option value="orders">Pedidos</option>
+                                         <option value="products">Productos</option>
+                                         <option value="customers">Clientes</option>
+                                     </select>
+                                 </div>
+                                 <div class="form-group">
+                                     <label for="report-group">Agrupar por</label>
+                                     <select id="report-group">
+                                         <option value="day">Día</option>
+                                         <option value="week">Semana</option>
+                                         <option value="month">Mes</option>
+                                         <option value="category">Categoría</option>
+                                         <option value="product">Producto</option>
+                                     </select>
+                                 </div>
+                             </div>
+                             <button id="generate-report" class="btn btn-primary">Generar Reporte</button>
+                             <button id="export-report" class="btn btn-success">Exportar a Excel</button>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Ventas por Categoría</h4>
+                             <div id="sales-chart" style="height: 300px; display: flex; align-items: center; justify-content: center; background: var(--color-surface-variant); border-radius: var(--border-radius-md);">
+                                 <p>Selecciona filtros y genera el reporte</p>
+                             </div>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Detalle de Ventas</h4>
+                             <div class="data-table-container" style="overflow-x: auto;">
+                                 <table class="data-table">
+                                     <thead>
+                                         <tr>
+                                             <th>ID Pedido</th>
+                                             <th>Fecha</th>
+                                             <th>Cliente</th>
+                                             <th>Total</th>
+                                             <th>Estado</th>
+                                             <th>Método de Pago</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="sales-details">
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="tab-content" id="marketing-tab">
+                     <div class="admin-section">
+                         <h3>Marketing y Promociones</h3>
+                         <div class="admin-grid">
+                             <div class="admin-card">
+                                 <h4>Crear Cupón de Descuento</h4>
+                                 <form id="admin-coupon-form">
+                                     <div class="form-group">
+                                         <label for="coupon-code">Código del Cupón</label>
+                                         <input type="text" id="coupon-code" required>
+                                     </div>
+                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                         <div class="form-group">
+                                             <label for="coupon-type">Tipo de Descuento</label>
+                                             <select id="coupon-type" required>
+                                                 <option value="percentage">Porcentaje</option>
+                                                 <option value="fixed">Monto Fijo</option>
+                                             </select>
+                                         </div>
+                                         <div class="form-group">
+                                             <label for="coupon-value">Valor</label>
+                                             <input type="number" id="coupon-value" step="0.01" required>
+                                         </div>
+                                     </div>
+                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                         <div class="form-group">
+                                             <label for="coupon-start">Fecha de Inicio</label>
+                                             <input type="datetime-local" id="coupon-start" required>
+                                         </div>
+                                         <div class="form-group">
+                                             <label for="coupon-end">Fecha de Fin</label>
+                                             <input type="datetime-local" id="coupon-end" required>
+                                         </div>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="coupon-usage">Límite de Usos</label>
+                                         <input type="number" id="coupon-usage" placeholder="Ilimitado">
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="coupon-min-order">Mínimo de Compra</label>
+                                         <input type="number" id="coupon-min-order" step="0.01" placeholder="Sin mínimo">
+                                     </div>
+                                     <button type="submit" class="btn btn-primary">Crear Cupón</button>
+                                 </form>
+                             </div>
+                             
+                             <div class="admin-card">
+                                 <h4>Programar Banner Promocional</h4>
+                                 <form id="admin-banner-form">
+                                     <div class="form-group">
+                                         <label for="banner-title">Título del Banner</label>
+                                         <input type="text" id="banner-title" required>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="banner-description">Descripción</label>
+                                         <textarea id="banner-description" rows="3" required></textarea>
+                                     </div>
+                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                         <div class="form-group">
+                                             <label for="banner-start">Fecha de Inicio</label>
+                                             <input type="datetime-local" id="banner-start" required>
+                                         </div>
+                                         <div class="form-group">
+                                             <label for="banner-end">Fecha de Fin</label>
+                                             <input type="datetime-local" id="banner-end" required>
+                                         </div>
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="banner-image">URL de la Imagen</label>
+                                         <input type="text" id="banner-image">
+                                     </div>
+                                     <div class="form-group">
+                                         <label for="banner-link">Enlace Destino</label>
+                                         <input type="text" id="banner-link">
+                                     </div>
+                                     <button type="submit" class="btn btn-primary">Programar Banner</button>
+                                 </form>
+                             </div>
+                         </div>
+                         
+                         <div class="admin-card">
+                             <h4>Cupones Activos</h4>
+                             <div class="data-table-container" style="overflow-x: auto;">
+                                 <table class="data-table">
+                                     <thead>
+                                         <tr>
+                                             <th>Código</th>
+                                             <th>Tipo</th>
+                                             <th>Valor</th>
+                                             <th>Válido Hasta</th>
+                                             <th>Usos</th>
+                                             <th>Acciones</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="admin-coupons-list">
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </section>
+            
+            <section id="account-view" class="view hidden">
+                 <h2>Mi Cuenta</h2>
+                 <div class="admin-grid">
+                     <div class="admin-card">
+                         <h3>Información Personal</h3>
+                         <form id="account-form">
+                             <div class="form-group">
+                                 <label for="account-name">Nombre</label>
+                                 <input type="text" id="account-name" required>
+                             </div>
+                             <div class="form-group">
+                                 <label for="account-email">Correo</label>
+                                 <input type="email" id="account-email" required>
+                             </div>
+                             <div class="form-group">
+                                 <label for="account-phone">Teléfono</label>
+                                 <input type="text" id="account-phone">
+                             </div>
+                             <div class="form-group">
+                                 <label for="account-address">Dirección</label>
+                                 <textarea id="account-address" rows="3"></textarea>
+                             </div>
+                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                         </form>
+                     </div>
+                     
+                     <div class="admin-card">
+                         <h3>Programa de Fidelidad</h3>
+                         <div style="text-align: center; padding: var(--spacing-md);">
+                             <div style="font-size: 3rem; color: var(--color-gold);">★</div>
+                             <h3 id="user-loyalty-tier" style="color: var(--color-gold);">Miembro Oro</h3>
+                             <p id="user-loyalty-points" style="font-size: 1.5rem; font-weight: bold; margin: 8px 0;">1,250 puntos</p>
+                             <p style="color: var(--color-on-surface-variant);">Solo necesitas 750 puntos más para el siguiente nivel</p>
+                             <div style="background: var(--color-surface-variant); height: 8px; border-radius: 4px; margin: 16px 0; overflow: hidden;">
+                                 <div style="background: var(--color-gold); height: 100%; width: 63%;"></div>
+                             </div>
+                         </div>
+                     </div>
+                     
+                     <div class="admin-card">
+                         <h3>Historial de Pedidos</h3>
+                         <div id="order-history" style="max-height: 400px; overflow-y: auto;">
+                             <p style="text-align: center; padding: 20px; color: var(--color-on-surface-variant);">No hay pedidos recientes</p>
+                         </div>
+                     </div>
+                     
+                     <div class="admin-card">
+                         <h3>Métodos de Pago Guardados</h3>
+                         <div id="saved-payments">
+                             <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--color-surface-variant);">
+                                 <div>
+                                     <div style="font-weight: 500;">•••• •••• •••• 1234</div>
+                                     <div style="font-size: 0.875rem; color: var(--color-on-surface-variant);">Visa - Expira 12/25</div>
+                                 </div>
+                                 <button class="btn btn-danger">Eliminar</button>
+                             </div>
+                         </div>
+                         <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">Agregar Método de Pago</button>
+                     </div>
+                 </div>
+            </section>
+
+            <section id="wishlist-view" class="view hidden">
+                <h2>Mi Lista de Deseos</h2>
+                <div id="wishlist-grid" class="product-grid">
+                    <p style="text-align: center; padding: 40px; color: var(--color-on-surface-variant); grid-column: 1 / -1;">Tu lista de deseos está vacía</p>
+                </div>
+            </section>
+
+            <section id="product-detail-view" class="view hidden">
+                <div id="product-detail-content"></div>
+            </section>
+        </div>
+    </main>
+
+    <div id="auth-modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="icon-btn" data-action="close-modal" style="position: absolute; top: 8px; right: 8px;"><span class="material-symbols-outlined">close</span></button>
+            <div id="login-view">
+                <h2 style="text-align:center;">Iniciar Sesión</h2>
+                <form id="login-form">
+                    <div class="form-group"><label for="login-email">Correo</label><input type="email" id="login-email" required></div>
+                    <div class="form-group"><label for="login-password">Contraseña</label><input type="password" id="login-password" required></div>
+                    <p id="login-error-message" style="color:var(--color-error); font-size: 0.875rem;"></p>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Ingresar</button>
+                </form>
+                <p style="text-align:center; margin-top:16px;">¿No tienes cuenta? <a href="#" data-action="show-register" style="color:var(--color-primary); font-weight:500;">Regístrate</a></p>
+            </div>
+            <div id="register-view" class="hidden">
+                 <h2 style="text-align:center;">Crear Cuenta</h2>
+                 <form id="register-form">
+                    <div class="form-group"><label for="register-name">Nombre</label><input type="text" id="register-name" required></div>
+                    <div class="form-group"><label for="register-email">Correo</label><input type="email" id="register-email" required></div>
+                    <div class="form-group"><label for="register-password">Contraseña</label><input type="password" id="register-password" required></div>
+                    <div class="form-group"><label for="register-phone">Teléfono (opcional)</label><input type="text" id="register-phone"></div>
+                    <p id="register-error-message" style="color:var(--color-error); font-size: 0.875rem;"></p>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Registrarse</button>
+                </form>
+                <p style="text-align:center; margin-top:16px;">¿Ya tienes cuenta? <a href="#" data-action="show-login" style="color:var(--color-primary); font-weight:500;">Inicia Sesión</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="cart-overlay" class="modal-overlay hidden" style="background:rgba(0,0,0,0.3); z-index:1000;"></div>
+    <aside id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center; padding:var(--spacing-md); border-bottom: 1px solid var(--color-surface-variant);">
+            <h3>Mi Carrito</h3>
+            <button class="icon-btn" data-action="close-cart"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="cart-items-container"></div>
+        <div class="cart-footer">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong>Subtotal:</strong><strong id="cart-subtotal">$0.00</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong>Envío:</strong><strong id="cart-shipping">$0.00</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong>Descuento:</strong><strong id="cart-discount">-$0.00</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size: 1.2rem;"><strong>Total:</strong><strong id="cart-total">$0.00</strong></div>
+            <button id="checkout-btn" class="btn btn-primary" style="width:100%; margin-top: 16px;" data-action="go-to-checkout">Proceder al Pago</button>
+            <button class="btn" style="width:100%; margin-top: 8px;" data-action="continue-shopping">Seguir Comprando</button>
+        </div>
+    </aside>
+
+    <template id="product-card-template">
+        <div class="product-card">
+            <button class="wishlist-btn" data-action="toggle-wishlist">
+                <span class="material-symbols-outlined">favorite</span>
+            </button>
+            <div class="product-badge hidden" data-badge-type="sale">Oferta</div>
+            <div class="product-badge hidden" data-badge-type="new">Nuevo</div>
+            <img class="product-image" src="" alt="">
+            <div class="product-info">
+                <h3 class="product-name"></h3>
+                <p class="product-category" style="font-size:0.875rem; color:var(--color-on-surface-variant);"></p>
+                <div class="product-rating">
+                    <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--color-warning);">star</span>
+                    <span class="rating-value" style="font-size: 0.875rem;"></span>
+                    <span class="rating-count" style="font-size: 0.75rem; color: var(--color-on-surface-variant);"></span>
+                </div>
+                <div class="product-pricing" style="display:flex; align-items:center; gap:8px; margin:8px 0;">
+                    <span class="product-price" style="font-size:1.25rem; font-weight:700; color:var(--color-primary);"></span>
+                    <span class="product-original-price" style="text-decoration:line-through; color:var(--color-on-surface-variant);"></span>
+                </div>
+                <div class="product-stock"></div>
+                <button class="btn btn-primary" data-action="add-to-cart">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">add_shopping_cart</span>
+                    Agregar al carrito
+                </button>
+            </div>
+        </div>
+    </template>
+    
+    <template id="cart-item-template">
+        <div class="cart-item" style="display:flex; gap:16px; align-items:center; padding: 12px 16px; border-bottom: 1px solid var(--color-surface-variant);">
+            <img class="cart-item-image" src="" alt="" style="width:60px; height:60px; object-fit:cover; border-radius:var(--border-radius-sm);">
+            <div style="flex-grow:1;">
+                <p class="cart-item-name" style="font-weight:500;"></p>
+                <p class="cart-item-price" style="color:var(--color-on-surface-variant); font-size:0.875rem;"></p>
+            </div>
+            <div class="quantity-control" style="display:flex; align-items:center; gap:8px;">
+                <button class="icon-btn quantity-btn" data-action="decrease-quantity" style="width:28px; height:28px;">-</button>
+                <span class="item-quantity" style="min-width: 20px; text-align: center;">1</span>
+                <button class="icon-btn quantity-btn" data-action="increase-quantity" style="width:28px; height:28px;">+</button>
+            </div>
+            <button class="icon-btn" data-action="remove-from-cart" style="color:var(--color-error);"><span class="material-symbols-outlined">delete</span></button>
+        </div>
+    </template>
+
+    <template id="product-detail-template">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl);">
+            <div>
+                <img id="detail-product-image" src="" alt="" style="width: 100%; border-radius: var(--border-radius-lg);">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+                    <img class="detail-thumbnail" src="" alt="" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: var(--border-radius-sm); cursor: pointer;">
+                </div>
+            </div>
+            <div>
+                <button class="btn" data-action="go-back" style="margin-bottom: var(--spacing-md);">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Volver
+                </button>
+                <h1 id="detail-product-name" style="font-size: 2rem; margin-bottom: var(--spacing-sm);"></h1>
+                <div class="product-rating" style="margin-bottom: var(--spacing-md);">
+                    <span class="material-symbols-outlined" style="font-size: 1.5rem; color: var(--color-warning);">star</span>
+                    <span id="detail-rating-value" style="font-size: 1.25rem; font-weight: 500;"></span>
+                    <span id="detail-rating-count" style="font-size: 1rem; color: var(--color-on-surface-variant);"></span>
+                </div>
+                <div class="product-pricing" style="display:flex; align-items:center; gap:12px; margin: var(--spacing-md) 0;">
+                    <span id="detail-product-price" style="font-size:2rem; font-weight:700; color:var(--color-primary);"></span>
+                    <span id="detail-product-original-price" style="text-decoration:line-through; color:var(--color-on-surface-variant); font-size: 1.5rem;"></span>
+                </div>
+                <div id="detail-product-stock" style="margin-bottom: var(--spacing-md);"></div>
+                <div id="detail-product-description" style="margin-bottom: var(--spacing-lg); line-height: 1.6;"></div>
+                
+                <div style="display: flex; gap: var(--spacing-md); align-items: center; margin-bottom: var(--spacing-lg);">
+                    <div class="quantity-control" style="display:flex; align-items:center; gap:12px; border: 1px solid var(--color-outline); border-radius: var(--border-radius-lg); padding: 8px 16px;">
+                        <button class="icon-btn quantity-btn" data-action="decrease-quantity" style="width:32px; height:32px;">-</button>
+                        <span id="detail-quantity" style="min-width: 40px; text-align: center; font-weight: 500; font-size: 1.1rem;">1</span>
+                        <button class="icon-btn quantity-btn" data-action="increase-quantity" style="width:32px; height:32px;">+</button>
+                    </div>
+                    <button class="btn btn-primary" data-action="add-to-cart-detail" style="flex-grow: 1; padding: 12px 24px;">
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">add_shopping_cart</span>
+                        Agregar al Carrito
+                    </button>
+                    <button class="icon-btn wishlist-btn" data-action="toggle-wishlist-detail" style="width: 48px; height: 48px;">
+                        <span class="material-symbols-outlined">favorite</span>
+                    </button>
+                </div>
+                
+                <div style="border-top: 1px solid var(--color-surface-variant); padding-top: var(--spacing-lg);">
+                    <h3 style="margin-bottom: var(--spacing-md);">Características</h3>
+                    <div id="detail-product-features" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: var(--spacing-xl); border-top: 1px solid var(--color-surface-variant); padding-top: var(--spacing-xl);">
+            <h3 style="margin-bottom: var(--spacing-lg);">Reseñas de Clientes</h3>
+            <div id="detail-product-reviews"></div>
+        </div>
+    </template>
+<script src="app.js"></script>
+</body>
+</html>

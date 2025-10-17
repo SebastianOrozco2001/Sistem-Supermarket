@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pruebas Unitarias - SuperGo</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.20.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+
+  <script src="https://code.jquery.com/qunit/qunit-2.20.0.js"></script>
+
+  <script src="app.js"></script>
+
+  <script>
+    // Prueba para la función que formatea la moneda
+    QUnit.module('Utilidades', function() {
+      QUnit.test('utils.formatCurrency debe formatear números a moneda', function(assert) {
+        // Casos de prueba
+        assert.equal(utils.formatCurrency(55.5), '$55.50', 'Formatea un número decimal correctamente');
+        assert.equal(utils.formatCurrency(100), '$100.00', 'Formatea un número entero correctamente');
+        assert.equal(utils.formatCurrency(0), '$0.00', 'Formatea el cero correctamente');
+      });
+
+      // Prueba para la función que valida emails
+      QUnit.test('utils.validateEmail debe validar correos electrónicos', function(assert) {
+        assert.ok(utils.validateEmail('test@example.com'), 'Un email válido debe pasar');
+        assert.notOk(utils.validateEmail('test@example'), 'Un email sin .com debe fallar');
+        assert.notOk(utils.validateEmail('testexample.com'), 'Un email sin @ debe fallar');
+      });
+
+      // Prueba para la función que calcula el estado del stock
+      QUnit.test('utils.getStockStatus debe devolver el estado correcto', function(assert) {
+        assert.deepEqual(utils.getStockStatus(0), { text: 'Agotado', class: 'stock-out' }, 'Stock 0 debe ser Agotado');
+        assert.deepEqual(utils.getStockStatus(5), { text: 'Solo 5 disponibles', class: 'stock-low' }, 'Stock bajo (menos de 10) es correcto');
+        assert.deepEqual(utils.getStockStatus(20), { text: 'En stock', class: '' }, 'Stock normal es correcto');
+      });
+    });
+  </script>
+</body>
+</html>
